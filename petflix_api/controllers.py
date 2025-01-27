@@ -7,11 +7,12 @@ from .serializers import UserModelSerializer
 from rest_framework.generics import UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from petflix.models import Pet, AdoptionRequest
 from .serializers import RequestSerializer
+from rest_framework import status
+from rest_framework.decorators import api_view
 
 from .serializers import RequestSerializer
 
@@ -29,6 +30,18 @@ from rest_framework.generics import DestroyAPIView
 # PETS
 from .serializers import DogSerializer
 from .serializers import CatSerializer
+
+
+@api_view(['GET'])
+def PetList(request):
+    try:
+        pets = Pet.objects.all()
+        pets = pets.filter(pet_type__in=["dog", "cat"])
+        pets = pets.filter(is_adopted=True)
+        return Response(pets.values(), status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(f"Error: {str(e)}", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class PetsListController(generics.ListCreateAPIView):
     queryset = Pet.objects.all()
@@ -179,7 +192,7 @@ class PetEdit(UpdateAPIView):
     lookup_field = 'id'
     
     def perform_update(self, serializer):
-        user_id = self.request.user.id
+        user_id = self.request.user
         instance = serializer.save(original_owner=user_id)
         print(f"Pet {instance.name} updated by {self.request.user.username}")
 

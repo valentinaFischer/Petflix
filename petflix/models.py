@@ -106,3 +106,7 @@ class AdoptionRequest(models.Model):
 
     def __str__(self):
         return f"Adoption request by {self.user.first_name} for {self.pet.name}"
+    
+
+adoption_request = AdoptionRequest()
+user_id = adoption_request.user.pk
