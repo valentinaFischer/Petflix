@@ -12,14 +12,22 @@ class Pet(models.Model):
         ('heterochromia', 'Heterochromia'),
     ]
 
+    PET_TYPES = [
+        ('dog', 'Dog'),
+        ('cat', 'Cat'), 
+    ]
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     name = models.CharField(max_length=50)
     birthdate = models.DateField()
     eyecolor = models.CharField(max_length=20, choices=EYE_COLORS, default='brown')
     description = models.TextField(max_length=200)
-    original_owner = models.ForeignKey(User, on_delete=models.PROTECT) 
+    original_owner = models.ForeignKey(User, on_delete=models.CASCADE) 
     is_adopted = models.BooleanField(default=False)
+    pet_type = models.CharField(max_length=20, choices=PET_TYPES, default='dog')
+    #slug = models.SlugField(max_length=30, unique=True)
+
     def age(self):
         return timezone.now().year - self.birthdate.year
 
